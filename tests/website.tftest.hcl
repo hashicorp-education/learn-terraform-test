@@ -1,3 +1,12 @@
+# Configure the provider default tags 
+provider "aws" {
+  default_tags {
+    tags = {
+      Environment = "Test"
+    }
+  }
+}
+
 # Call the setup module to create a random bucket prefix
 run "setup" {
   module {
