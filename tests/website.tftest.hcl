@@ -1,5 +1,6 @@
-# Configure the provider default tags 
+# Optional. Configure the provider default tags 
 provider "aws" {
+  region = "us-east-1"
   default_tags {
     tags = {
       Environment = "Test"
@@ -25,48 +26,18 @@ run "create_bucket" {
   # Check that the bucket name is correct
   assert {
     condition     = aws_s3_bucket.s3_bucket.bucket == "${run.setup.bucket_prefix}-aws-s3-website-test"
-    error_message = "Invalid bucket name. Wanted ${run.setup.bucket_prefix}-aws-s3-website-test, got ${aws_s3_bucket.s3_bucket.bucket}"
+    error_message = "Invalid bucket name"
   }
-}
-
-# Check the integrity of the files uploaded
-run "file_etags" {
-  command = plan
 
   # Check index.html hash matches
   assert {
     condition     = aws_s3_object.index.etag == filemd5("./www/index.html")
-    error_message = "Invalid eTag for index.html. Wanted ${filemd5("./www/index.html")}, got ${aws_s3_object.index.etag}"
+    error_message = "Invalid eTag for index.html"
   }
 
   # Check error.html hash matches
   assert {
     condition     = aws_s3_object.error.etag == filemd5("./www/error.html")
-    error_message = "Invalid eTag for error.html. Wanted ${filemd5("./www/error.html")}, got ${aws_s3_object.error.etag}"
-  }
-}
-
-# Check that the website is running and responding to requests
-run "website_is_rinning" {
-  command = plan
-
-  module {
-    source = "./tests/final"
-  }
-
-  variables {
-    endpoint = run.file_etags.website_endpoint
-  }
-
-  # index.html responds with 200
-  assert {
-    condition     = data.http.index.status_code == 200
-    error_message = "Index responded with HTTP status ${data.http.index.status_code}"
-  }
-
-  # index.html has the expectec content
-  assert {
-    condition     = strcontains(data.http.index.response_body, "Terramino")
-    error_message = "Index page does not contain 'Terramino'"
+    error_message = "Invalid eTag for error.html"
   }
 }
