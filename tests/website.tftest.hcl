@@ -1,6 +1,5 @@
 # Optional. Configure the provider default tags 
 provider "aws" {
-  region = "us-east-1"
   default_tags {
     tags = {
       Environment = "Test"
@@ -17,8 +16,6 @@ run "setup" {
 
 # Apply run block to create the bucket
 run "create_bucket" {
-  command = apply
-
   variables {
     bucket_name = "${run.setup.bucket_prefix}-aws-s3-website-test"
   }
