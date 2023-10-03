@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "3.5.1"
     }
   }
@@ -12,5 +12,5 @@ resource "random_pet" "bucket_prefix" {
 }
 
 output "bucket_prefix" {
-    value = random_pet.bucket_prefix.id
+  value = random_pet.bucket_prefix.id
 }
