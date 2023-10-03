@@ -1,14 +1,5 @@
-# Optional. Configure the provider default tags 
-provider "aws" {
-  default_tags {
-    tags = {
-      Environment = "Test"
-    }
-  }
-}
-
 # Call the setup module to create a random bucket prefix
-run "setup" {
+run "setup_tests" {
   module {
     source = "./tests/setup"
   }
@@ -17,12 +8,12 @@ run "setup" {
 # Apply run block to create the bucket
 run "create_bucket" {
   variables {
-    bucket_name = "${run.setup.bucket_prefix}-aws-s3-website-test"
+    bucket_name = "${run.setup_tests.bucket_prefix}-aws-s3-website-test"
   }
 
   # Check that the bucket name is correct
   assert {
-    condition     = aws_s3_bucket.s3_bucket.bucket == "${run.setup.bucket_prefix}-aws-s3-website-test"
+    condition     = aws_s3_bucket.s3_bucket.bucket == "${run.setup_tests.bucket_prefix}-aws-s3-website-test"
     error_message = "Invalid bucket name"
   }
 
